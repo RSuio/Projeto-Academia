@@ -5,7 +5,7 @@ from typing import List, Optional
 class UsuarioSchema(BaseModel):
     nome: str = Field(..., min_length=3, max_length=50)
     email: EmailStr
-    senha: str = Field(..., min_length=6, description="A senha deve ter no mínimo 6 caracteres", examples=["senha123"])
+    senha: str 
     ativo: bool = True
     admin: bool = False
     

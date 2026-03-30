@@ -40,7 +40,7 @@ async def criar_conta(usuario_schema: UsuarioSchema, session: Session = Depends(
         raise HTTPException(status_code = status.HTTP_400_BAD_REQUEST, detail="E-mail do usuário já cadastrado")
     else:
         senha_criptografada = bcrypt_context.hash(usuario_schema.senha)
-        novo_usuario = Usuario(usuario_schema.nome,usuario_schema.email,senha_criptografada, usuario_schema.admin, usuario_schema.ativo)
+        novo_usuario = Usuario(nome = usuario_schema.nome, email = usuario_schema.email, senha = senha_criptografada, admin = usuario_schema.admin, ativo = usuario_schema.ativo)
         session.add(novo_usuario)
         session.commit()
         return {"mensagem":f"Usuário cadastrado com sucesso {usuario_schema.email}."}
@@ -49,7 +49,6 @@ async def criar_conta(usuario_schema: UsuarioSchema, session: Session = Depends(
 
 @auth_routes.post("/login")
 async def login(login_schema: LoginSchema, session: Session = Depends(pegar_sessao)):
-    usuario = session.query(Usuario).filter(Usuario.email == login_schema.email).first()
     usuario = autenticar_usuario(login_schema.email, login_schema.senha, session)
     if not usuario:
         raise HTTPException(status_code = 401, detail="Esse usuario não existe ou credenciais invalidas.")
