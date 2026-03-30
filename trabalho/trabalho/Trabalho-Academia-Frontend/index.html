@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academia - Acesso</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <div class="form-box" id="loginForm">
+            <h2>Entrar</h2>
+            <form id="formLogin">
+                <div class="input-group">
+                    <label for="emailLogin">E-mail</label>
+                    <input type="email" id="emailLogin" placeholder="seu@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="senhaLogin">Senha</label>
+                    <input type="password" id="senhaLogin" placeholder="******" required>
+                </div>
+                <button type="submit" class="btn">Entrar</button>
+            </form>
+            <p>Não tem uma conta? <a href="#" id="irParaCadastro">Cadastre-se</a></p>
+        </div>
+
+        <div class="form-box hidden" id="cadastroForm">
+            <h2>Criar Conta</h2>
+            <form id="formCadastro">
+                <div class="input-group">
+                    <label for="nome">Nome Completo</label>
+                    <input type="text" id="nome" placeholder="Seu nome" required minlength="3" maxlength="50">
+                </div>
+                <div class="input-group">
+                    <label for="emailCadastro">E-mail</label>
+                    <input type="email" id="emailCadastro" placeholder="seu@email.com" required>
+                </div>
+                <div class="input-group">
+                    <label for="senhaCadastro">Senha</label>
+                    <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres" required minlength="6" maxlength="72">
+                    <small class="hint">A senha deve ter no mínimo 6 caracteres.</small>
+                </div>
+                <button type="submit" class="btn">Cadastrar</button>
+            </form>
+            <p>Já possui conta? <a href="#" id="irParaLogin">Fazer Login</a></p>
+        </div>
+    </div>
+
+    <script src="/trabalho/Trabalho-Academia-Frontend/scripts.js"></script>
+</body>
+</html>
