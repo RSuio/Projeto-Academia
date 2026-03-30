@@ -1,3 +1,6 @@
 pip install -r requirements.txt
 
-criar .env SECRET_KEY = "Co7Tiu;$altBD+Uz"
+criar exemplo = .env 
+SECRET_KEY = "Co7Tiu;$altBD+Uz"
+ALGORITHM = "HS256"
+
