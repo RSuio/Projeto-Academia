@@ -3,7 +3,6 @@ const URL_BACKEND = "http://127.0.0.1:8000";
 async function carregarTreinos() {
     const token = localStorage.getItem('token_academia');
 
-    // Se não tiver token, volta para o login
     if (!token) {
         window.location.href = "index.html";
         return;
@@ -13,7 +12,7 @@ async function carregarTreinos() {
         const response = await fetch(`${URL_BACKEND}/treinos/meus-treinos`, {
             method: 'GET',
             headers: {
-                'Authorization': `Bearer ${token}` // Aqui enviamos o token para a API
+                'Authorization': `Bearer ${token}`
             }
         });
 
@@ -33,7 +32,7 @@ async function carregarTreinos() {
 
 function renderizarTreinos(treinos) {
     const container = document.getElementById('lista-treinos');
-    container.innerHTML = ""; // Limpa o "Carregando..."
+    container.innerHTML = ""; 
 
     if (treinos.length === 0) {
         container.innerHTML = "<p>Você ainda não possui treinos cadastrados.</p>";
@@ -41,7 +40,6 @@ function renderizarTreinos(treinos) {
     }
 
     treinos.forEach(treino => {
-        // Criar a tabela de exercícios
         let exerciciosHtml = "";
         treino.exercicios.forEach(ex => {
             exerciciosHtml += `
@@ -53,7 +51,6 @@ function renderizarTreinos(treinos) {
             `;
         });
 
-        // Criar o card do treino
         const card = `
             <div class="treino-card">
                 <h3>${treino.nome}</h3>

@@ -23,14 +23,14 @@ class ExercicioCreate(BaseModel):
     nome: str
     series: int
     repeticoes: int
-    carga: float
+    carga: Optional[int] = None
 
 
 class TreinoCreate(BaseModel):
     nome: str
     objetivo: str
     usuario_id: int
-    exercicios: List[ExercicioCreate]
+    exercicios: float | None = None
 
     model_config = {
         "json_schema_extra": {
@@ -52,7 +52,7 @@ class ExercicioRead(BaseModel):
     nome: str
     series: int
     repeticoes: int
-    carga: float
+    carga: float | None = None
 
     class Config:
         from_attributes = True

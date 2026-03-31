@@ -57,7 +57,8 @@ async def login(login_schema: LoginSchema, session: Session = Depends(pegar_sess
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "expires_in": 86400 
+        "expires_in": 86400,
+        "is_admin": usuario.admin,
     }
 
 @auth_routes.post("/login-form")
@@ -70,4 +71,5 @@ async def login_form(dados_formulario: OAuth2PasswordRequestForm = Depends(), se
     return {
         "access_token": access_token,
         "token_type": "bearer",
+        "is_admin": usuario.admin,
     }

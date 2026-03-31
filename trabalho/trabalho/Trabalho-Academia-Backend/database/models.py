@@ -49,7 +49,7 @@ class Exercicio(Base):
     nome = Column("nome", String)
     series = Column("series", Integer) 
     repeticoes = Column("repeticoes", Integer) 
-    carga = Column("carga", Float) 
+    carga = Column("carga", Float, nullable=True) 
     treino_id = Column(Integer, ForeignKey("treinos.id"))
 
     def __init__(self, nome, series, repeticoes, carga, treino_id):

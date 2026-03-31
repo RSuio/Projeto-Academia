@@ -3,6 +3,7 @@ from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
 import os
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -11,6 +12,22 @@ ALGORITHM = os.getenv("ALGORITHM")
 ACESS_TOKEN_EXPIRE_MINUTES = str(os.getenv("ACESS_TOKEN_EXPIRE_MINUTES"))
 
 app = FastAPI()
+
+origins = [
+    "http://localhost:5500", 
+    "http://127.0.0.1:5500",
+    "http://localhost:8000", 
+    "http://127.0.0.1:8000",
+    
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,           
+    allow_credentials=True,           
+    allow_methods=["*"],             
+    allow_headers=["*"],              
+)
 
 bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_schema = OAuth2PasswordBearer(tokenUrl="auth/login-form")

@@ -203,3 +203,108 @@ body {
     margin-left: auto;
     margin-right: auto;
 }
+
+.hidden { display: none !important; }
+
+.admin-menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.menu-card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s, box-shadow 0.3s;
+    border-bottom: 5px solid #28a745;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.menu-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.menu-card.delete-card { border-bottom-color: #dc3545; }
+
+.menu-card .icon { font-size: 40px; margin-bottom: 15px; }
+
+.admin-section {
+    animation: slideIn 0.4s ease-out;
+    margin-top: 20px;
+}
+
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.btn-back {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Melhora a organização dos inputs no topo */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Divide em duas colunas */
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+/* Faz o ID do aluno ocupar uma linha inteira ou ser menor */
+.form-grid .input-group:first-child {
+    grid-column: span 2;
+}
+
+.divisor-linha {
+    height: 1px;
+    background: #eee;
+    margin: 25px 0;
+}
+
+.exercicios-header {
+    margin-bottom: 15px;
+}
+
+.exercicios-header h4 {
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.exercicios-header p {
+    font-size: 13px;
+    color: #888;
+}
+
+/* Botões da parte inferior */
+.form-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px dashed #28a745;
+    color: #28a745;
+}
+
+.btn-outline:hover {
+    background: #f0fff4;
+}
+
+.btn-save {
+    background: #007bff;
+    font-size: 16px;
+    padding: 15px;
+}

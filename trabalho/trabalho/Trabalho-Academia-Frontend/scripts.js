@@ -63,12 +63,18 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
         if (response.ok) {
             localStorage.setItem('token_academia', data.access_token);
             alert("Login realizado com sucesso!");
-            window.location.href = "dashboard.html";
-            
+
+            if (data.is_admin === true) {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "dashboard.html";
+            }
         } else {
             alert(`Erro: ${data.detail || "E-mail ou senha inválidos."}`);
         }
+
     } catch (error) {
+        console.error("Erro na requisição:", error);
         alert("Erro ao conectar com o servidor.");
     }
 });

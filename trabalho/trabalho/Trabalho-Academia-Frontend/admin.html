@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Painel Admin - Academia</title>
+    <link rel="stylesheet" href="/trabalho/trabalho/Trabalho-Academia-Frontend/style.css">
+</head>
+<nav class="navbar">
+    <span>Painel <strong>Admin</strong></span>
+    <button id="btnLogout" class="btn-sm">Sair</button>
+</nav>
+
+<div class="dashboard-container">
+    <header class="profile-header">
+        <h1>Bem-vindo, Administrador</h1>
+        <p>Escolha o que deseja gerenciar hoje:</p>
+    </header>
+
+    <div class="admin-menu-grid">
+        <div class="menu-card" onclick="alternarTela('view-adicionar')">
+            <div class="icon">➕</div>
+            <h3>Novo Treino</h3>
+            <p>Cadastrar ficha completa para aluno</p>
+        </div>
+        <div class="menu-card delete-card" onclick="alternarTela('view-remover')">
+            <div class="icon">🗑️</div>
+            <h3>Remover Treino</h3>
+            <p>Excluir treinos antigos ou errados</p>
+        </div>
+    </div>
+
+    <section id="view-adicionar" class="admin-section hidden">
+    <div class="section-header">
+        <button class="btn-back" onclick="fecharTelas()">← Voltar ao Menu</button>
+        <h2>Cadastrar Novo Treino</h2>
+    </div>
+
+    <form id="formNovoTreino" class="treino-card">
+        <div class="form-grid">
+            <div class="input-group">
+                <label>ID do Aluno:</label>
+                <input type="number" id="usuario_id" placeholder="Ex: 1" required>
+            </div>
+
+            <div class="input-group">
+                <label>Nome do Treino:</label>
+                <input type="text" id="nome_treino" placeholder="Ex: Treino A - Superior" required>
+            </div>
+
+            <div class="input-group">
+                <label>Objetivo do Treino:</label>
+                <input type="text" id="objetivo" placeholder="Ex: Hipertrofia ou Emagrecimento" required>
+            </div>
+        </div>
+
+        <div class="divisor-linha"></div>
+
+        <div class="exercicios-header">
+            <h4>Lista de Exercícios</h4>
+            <p>Adicione os movimentos que compõem este treino.</p>
+        </div>
+
+        <div id="container-exercicios">
+            </div>
+
+        <div class="form-actions">
+            <button type="button" id="btnAddExercicio" class="btn btn-outline">+ Adicionar Exercício</button>
+            <button type="submit" class="btn btn-save">Finalizar e Salvar Treino</button>
+        </div>
+    </form>
+</section>
+
+    <section id="view-remover" class="admin-section hidden">
+        <div class="section-header">
+            <button class="btn-back" onclick="fecharTelas()">← Voltar</button>
+            <h2>Remover Treino</h2>
+        </div>
+        <div class="treino-card">
+            <label>Digite o ID do Treino:</label>
+            <input type="number" id="id_treino_deletar" placeholder="Ex: 15">
+            <button id="btnDeletar" class="btn-sm btn-danger">Excluir Permanentemente</button>
+        </div>
+    </section>
+</div>
+    <script src="/trabalho/trabalho/Trabalho-Academia-Frontend/admin.js"></script>
+</body>
+</html>
