@@ -62,6 +62,7 @@ document.getElementById('formLogin').addEventListener('submit', async (e) => {
 
         if (response.ok) {
             localStorage.setItem('token_academia', data.access_token);
+            localStorage.setItem('is_admin', data.is_admin);
             alert("Login realizado com sucesso!");
 
             if (data.is_admin === true) {

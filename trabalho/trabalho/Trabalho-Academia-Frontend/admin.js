@@ -87,3 +87,17 @@ function fecharTelas() {
     document.querySelector('.admin-menu-grid').classList.remove('hidden');
     document.querySelector('.profile-header').classList.remove('hidden');
 }
+function logout() {
+    localStorage.removeItem('token_academia');
+    window.location.href = "index.html"; 
+}
+document.getElementById('btnLogout').addEventListener('click', logout);
+
+if (!localStorage.getItem('token_academia')) {
+    alert("Acesso negado. Por favor, faça login.");
+    window.location.href = "index.html";
+}
+
+function irParaMeusTreinos() {
+    window.location.href = "dashboard.html";
+}

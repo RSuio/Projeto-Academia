@@ -82,3 +82,13 @@ function logout() {
 document.getElementById('btnLogout').addEventListener('click', logout);
 
 carregarTreinos();
+const isAdmin = localStorage.getItem('is_admin') === 'true';
+
+if (isAdmin) {
+    const areaAdmin = document.getElementById('area-admin-link');
+    areaAdmin.innerHTML = `
+        <button class="btn-sm" style="background: #28a745;" onclick="window.location.href='admin.html'">
+            Painel Admin
+        </button>
+    `;
+}
