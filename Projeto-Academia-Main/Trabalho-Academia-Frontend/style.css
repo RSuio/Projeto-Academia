@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+
+:root {
+    font-family: 'Inter', sans-serif;
+}
+
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.logo-font {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px -5px rgba(16, 185, 129, 0.15);
+}
+
+.modal {
+    animation: modalPop 0.25s ease-out;
+}
+
+@keyframes modalPop {
+    0% { opacity: 0; transform: scale(0.96); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+/* Custom scrollbar for dark and light modes */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.4);
+    border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: rgba(82, 82, 91, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.6);
+}

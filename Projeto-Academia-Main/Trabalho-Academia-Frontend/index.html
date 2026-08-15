@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ForgeFit - Academia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-slate-50 dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 min-h-screen transition-colors duration-200">
+
+    <!-- ═══════════════════════════════════════════
+         NAVBAR
+    ════════════════════════════════════════════ -->
+    <nav class="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 sticky top-0 z-50 transition-colors shadow-xs">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-x-3 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-9 h-9 bg-emerald-600 dark:bg-emerald-500 rounded-2xl flex items-center justify-center text-xl text-white dark:text-black shadow-xs">💪</div>
+                    <h1 class="logo-font text-3xl tracking-tighter font-bold text-slate-900 dark:text-white">ForgeFit</h1>
+                </div>
+                <div class="hidden md:flex items-center gap-x-8 text-sm font-medium">
+                    <a onclick="navigateTo('home')" class="hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors text-slate-700 dark:text-zinc-300">Início</a>
+                    <a onclick="isLoggedIn ? navigateTo('dashboard') : showToast('Faça login para acessar o painel')"
+                       class="hover:text-emerald-600 dark:hover:text-emerald-400 cursor-pointer transition-colors text-slate-700 dark:text-zinc-300">Painel</a>
+                </div>
+                <div id="nav-auth" class="flex items-center gap-x-4"></div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══════════════════════════════════════════
+         HOME
+    ════════════════════════════════════════════ -->
+    <section id="home-view" class="min-h-[calc(100vh-64px)] flex items-center bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-zinc-900 dark:to-black transition-colors py-12">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8">
+                <h1 class="text-6xl md:text-7xl font-bold leading-none tracking-tighter logo-font text-slate-900 dark:text-white">
+                    SUA MELHOR<br><span class="text-emerald-600 dark:text-emerald-400">VERSÃO</span> COMEÇA<br>AQUI
+                </h1>
+                <p class="text-xl text-slate-600 dark:text-zinc-400 max-w-md">
+                    Treinos personalizados criados pelo seu Personal Trainer.<br>
+                    Acompanhe seu progresso em um só lugar.
+                </p>
+                <div class="flex flex-wrap gap-4">
+                    <button type="button" onclick="showLoginModal()"
+                            class="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 px-8 py-4 rounded-3xl font-semibold text-lg text-white dark:text-black transition-all shadow-md shadow-emerald-600/20">
+                        Entrar
+                    </button>
+                    <button type="button" onclick="showRegisterModal()"
+                            class="border border-slate-300 hover:border-slate-800 dark:border-zinc-700 dark:hover:border-white px-8 py-4 rounded-3xl font-semibold text-lg text-slate-800 dark:text-white bg-white/80 dark:bg-transparent transition-all shadow-xs">
+                        Criar conta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════
+         MODAL: LOGIN
+    ════════════════════════════════════════════ -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-md p-8 modal relative border border-slate-200 dark:border-zinc-800 shadow-2xl">
+            <button type="button" onclick="hideLoginModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h2 class="text-3xl font-bold mb-6 text-slate-900 dark:text-white">Entrar na conta</h2>
+            <div class="space-y-5">
+                <input id="login-email" type="email" placeholder="E-mail"
+                       class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                <input id="login-password" type="password" placeholder="Senha"
+                       class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                <button type="button" onclick="handleLogin()"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 py-4 rounded-3xl font-semibold text-lg text-white dark:text-black transition-colors shadow-md shadow-emerald-500/20">
+                    ENTRAR
+                </button>
+            </div>
+            <p class="text-center mt-6 text-sm text-slate-500 dark:text-zinc-400">
+                Não tem conta?
+                <span onclick="hideLoginModal(); setTimeout(showRegisterModal, 300)"
+                      class="text-emerald-600 dark:text-emerald-400 cursor-pointer font-medium hover:underline">Criar agora</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         MODAL: CADASTRO
+    ════════════════════════════════════════════ -->
+    <div id="register-modal" class="hidden fixed inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-xs flex items-center justify-center z-50">
+        <div class="bg-white dark:bg-zinc-900 rounded-3xl w-full max-w-md p-8 modal relative border border-slate-200 dark:border-zinc-800 shadow-2xl">
+            <button type="button" onclick="hideRegisterModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h2 class="text-3xl font-bold mb-6 text-slate-900 dark:text-white">Criar sua conta</h2>
+            <div class="space-y-5">
+                <input id="reg-name" type="text" placeholder="Seu nome completo"
+                       class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                <input id="reg-email" type="email" placeholder="E-mail"
+                       class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                <input id="reg-password" type="password" placeholder="Crie uma senha"
+                       class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                <button type="button" onclick="handleRegister()"
+                        class="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 py-4 rounded-3xl font-semibold text-lg text-white dark:text-black transition-colors shadow-md shadow-emerald-500/20">
+                    CRIAR CONTA
+                </button>
+            </div>
+            <p class="text-center mt-6 text-sm text-slate-500 dark:text-zinc-400">
+                Já tem conta?
+                <span onclick="hideRegisterModal(); setTimeout(showLoginModal, 300)"
+                      class="text-emerald-600 dark:text-emerald-400 cursor-pointer font-medium hover:underline">Entrar</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         DASHBOARD
+    ════════════════════════════════════════════ -->
+    <section id="dashboard-view" class="hidden min-h-[calc(100vh-64px)] bg-slate-50 dark:bg-zinc-950 py-10 transition-colors">
+        <div class="max-w-7xl mx-auto px-6">
+
+            <!-- Cabeçalho do painel -->
+            <div class="flex justify-between items-center mb-10">
+                <div>
+                    <h1 id="dashboard-title" class="text-4xl font-bold logo-font text-slate-900 dark:text-white">Bem-vindo</h1>
+                    <p id="dashboard-subtitle" class="text-slate-500 dark:text-zinc-400"></p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button type="button" onclick="logout()"
+                            class="flex items-center gap-2 bg-white dark:bg-zinc-900 hover:bg-red-50 dark:hover:bg-red-500/10 text-slate-700 dark:text-zinc-300 hover:text-red-600 dark:hover:text-red-400 px-5 py-2.5 rounded-full border border-slate-200 dark:border-zinc-800 transition-colors shadow-xs text-xs font-semibold cursor-pointer">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                        <span>Sair</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex flex-col lg:flex-row gap-8">
+
+                <!-- Sidebar de abas -->
+                <div class="w-full lg:w-64 space-y-2">
+                    <button type="button" onclick="switchTab(0)" id="tab-0"
+                            class="dashboard-tab w-full text-left px-6 py-4 rounded-3xl font-medium bg-emerald-600 dark:bg-emerald-500 text-white dark:text-black flex items-center gap-3 transition-all shadow-sm">
+                        <i class="fa-solid fa-dumbbell"></i> Meus Treinos
+                    </button>
+                    <button type="button" onclick="switchTab(1)" id="tab-1"
+                            class="dashboard-tab hidden w-full text-left px-6 py-4 rounded-3xl font-medium flex items-center gap-3 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800/80 transition-all shadow-xs">
+                        <i class="fa-solid fa-chart-simple"></i> Progresso
+                    </button>
+                    <button type="button" onclick="switchTab(2)" id="tab-2"
+                            class="dashboard-tab hidden w-full text-left px-6 py-4 rounded-3xl font-medium flex items-center gap-3 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800/80 transition-all shadow-xs">
+                        <i class="fa-solid fa-plus"></i> Criar Treino
+                    </button>
+                    <button type="button" onclick="switchTab(3)" id="tab-3"
+                            class="dashboard-tab hidden w-full text-left px-6 py-4 rounded-3xl font-medium flex items-center gap-3 bg-white dark:bg-zinc-900 text-slate-700 dark:text-zinc-300 border border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-800/80 transition-all shadow-xs">
+                        <i class="fa-solid fa-users"></i> Meus Alunos
+                    </button>
+
+                </div>
+
+                <!-- Conteúdo das abas -->
+                <div class="flex-1">
+
+                    <!-- ABA 0: Meus Treinos -->
+                    <div id="content-0" class="tab-content block">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">Meus Treinos</h2>
+                            <button type="button" onclick="refreshWorkouts()" class="text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-2 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium">
+                                <i class="fa-solid fa-rotate"></i> Atualizar
+                            </button>
+                        </div>
+                        <div id="workouts-grid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-6"></div>
+                    </div>
+
+                    <!-- ABA 1: Progresso (aluno) -->
+                    <div id="content-1" class="tab-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">Seu Progresso</h2>
+                            <button type="button" onclick="carregarProgresso(); carregarObjetivo();" class="text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-2 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium">
+                                <i class="fa-solid fa-rotate"></i> Atualizar
+                            </button>
+                        </div>
+                        <!-- Barra de objetivo -->
+                        <div id="objetivo-container" class="mb-6"></div>
+                        <!-- Dashboard de frequência -->
+                        <div id="progresso-container"></div>
+                    </div>
+
+                    <!-- ABA 2: Criar Treino (personal) -->
+                    <div id="content-2" class="tab-content hidden">
+                        <div class="bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-slate-200 dark:border-zinc-800 shadow-sm">
+                            <h2 class="text-2xl font-semibold mb-6 text-slate-900 dark:text-white">Criar Novo Treino</h2>
+
+                            <!-- Dados do treino -->
+                            <div class="space-y-4 mb-6">
+                                <div class="p-4 bg-slate-100 dark:bg-zinc-950 rounded-2xl border border-slate-200 dark:border-zinc-800 flex items-center gap-4">
+                                    <i class="fa-solid fa-circle-info text-emerald-600 dark:text-emerald-500 text-xl"></i>
+                                    <p class="text-sm text-slate-600 dark:text-zinc-400">
+                                        Use a aba <strong class="text-emerald-600 dark:text-emerald-400">Meus Alunos</strong> para copiar o ID do aluno que receberá este treino.
+                                    </p>
+                                </div>
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <input id="new-treino-id-aluno" type="number" placeholder="ID do Aluno (ex: 1)"
+                                           class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-slate-900 dark:text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 md:col-span-1">
+                                    <input id="new-treino-name" type="text" placeholder="Nome (ex: Treino A - Peito)"
+                                           class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-slate-900 dark:text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 md:col-span-2">
+                                </div>
+                                <input id="new-treino-objetivo" type="text" placeholder="Objetivo (ex: Hipertrofia)"
+                                       class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 text-slate-900 dark:text-white rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500">
+
+                                <select id="new-treino-dia"
+                                        class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 text-slate-900 dark:text-zinc-100 cursor-pointer">
+                                    <option value="">Dia da semana (opcional)</option>
+                                    <option value="Segunda">💪 Segunda-feira</option>
+                                    <option value="Terça">💪 Terça-feira</option>
+                                    <option value="Quarta">💪 Quarta-feira</option>
+                                    <option value="Quinta">💪 Quinta-feira</option>
+                                    <option value="Sexta">💪 Sexta-feira</option>
+                                    <option value="Sábado">💪 Sábado</option>
+                                    <option value="Domingo">💪 Domingo</option>
+                                </select>
+
+                                <!-- Botão de objetivo direto na criação do treino -->
+                                <button type="button" onclick="abrirObjetivoPeloForm()"
+                                        class="flex items-center gap-2 text-sm text-slate-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 border border-slate-300 dark:border-zinc-700 hover:border-blue-500/40 bg-slate-100 dark:bg-zinc-800 hover:bg-blue-50 dark:hover:bg-blue-500/10 px-4 py-3 rounded-2xl transition-colors w-full justify-center">
+                                    <i class="fa-solid fa-bullseye text-blue-600 dark:text-blue-400"></i>
+                                    Definir Objetivo para este Aluno
+                                </button>
+                            </div>
+
+                            <!-- Seletor de categoria -->
+                            <select id="new-treino-categoria" onchange="carregarExerciciosPorCategoria(this.value)"
+                                    class="w-full bg-slate-100 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700 rounded-2xl px-5 py-4 focus:outline-none focus:border-emerald-500 text-slate-900 dark:text-zinc-100 cursor-pointer mb-4">
+                                <option value="" disabled selected>Carregando categorias...</option>
+                            </select>
+
+                            <!-- Busca dentro da categoria -->
+                            <div class="relative mb-4">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-slate-400 dark:text-zinc-500">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </div>
+                                <input type="text" id="input-busca-exercicio" oninput="filtrarExercicios()"
+                                       placeholder="Buscar exercício na categoria..."
+                                       class="w-full bg-slate-100 dark:bg-zinc-900 border border-slate-300 dark:border-zinc-700 rounded-xl pl-11 pr-4 py-3 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 transition-colors">
+                            </div>
+
+                            <!-- Grid de cards de exercícios -->
+                            <div id="cards-exercicios-container" class="hidden mt-4 bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl border border-slate-200 dark:border-zinc-800">
+                                <h4 class="text-sm font-medium text-emerald-600 dark:text-emerald-400 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-hand-pointer"></i> Clique nos exercícios para adicionar:
+                                </h4>
+                                <div id="grid-cards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-64 overflow-y-auto pr-2"></div>
+                            </div>
+
+                            <!-- Lista de exercícios selecionados -->
+                            <div class="pt-6 border-t border-slate-200 dark:border-zinc-800 mt-6">
+                                <h3 class="text-lg font-medium text-slate-900 dark:text-white mb-4">Exercícios Selecionados</h3>
+                                <div id="exercicios-container" class="space-y-3"></div>
+                            </div>
+
+                            <button type="button" onclick="createNewTreino()"
+                                    class="w-full bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:hover:bg-emerald-600 py-5 rounded-3xl font-semibold text-lg text-white dark:text-black transition-colors shadow-lg shadow-emerald-500/20 mt-8">
+                                SALVAR TREINO COMPLETO
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ABA 3: Meus Alunos (personal) -->
+                    <div id="content-3" class="tab-content hidden">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-2xl font-semibold text-slate-900 dark:text-white">Meus Alunos</h2>
+                            <button type="button" onclick="loadAlunos()" class="text-emerald-600 dark:text-emerald-400 text-sm flex items-center gap-2 hover:text-emerald-700 dark:hover:text-emerald-300 font-medium">
+                                <i class="fa-solid fa-rotate"></i> Atualizar
+                            </button>
+                        </div>
+                        <div id="alunos-container" class="bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col items-center justify-center min-h-[300px]">
+                            <p class="text-slate-500 dark:text-zinc-500">Carregando lista de alunos...</p>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Toast de avisos -->
+    <div id="toast" class="hidden fixed bottom-6 right-6 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-black px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[100] transition-all font-medium">
+        <span id="toast-text"></span>
+    </div>
+
+    <!-- ═══════════════════════════════════════════
+         SCRIPTS — ordem importa!
+    ════════════════════════════════════════════ -->
+    <script src="js/toast.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/navigation.js"></script>
+    <script src="js/workouts.js"></script>
+    <script src="js/students.js"></script>
+    <script src="js/create-workout.js"></script>
+    <script src="js/progress.js"></script>
+    <script src="js/objetivo.js"></script>
+    <script src="js/schedule.js"></script>
+</body>
+</html>
