@@ -15,8 +15,18 @@ from popular_portugues                import popular_catalogo
 
 ACESS_TOKEN_EXPIRE_MINUTES = str(os.getenv("ACESS_TOKEN_EXPIRE_MINUTES"))
 
+from sqlalchemy import text
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Auto-migração: garante que a nova coluna video_url exista no banco SQLite existente
+    try:
+        with db.connect() as conn:
+            conn.execute(text("ALTER TABLE exercicios_catalogo ADD COLUMN video_url VARCHAR"))
+            conn.commit()
+    except Exception:
+        pass  # Coluna já existe no banco
+
     # Auto-popula o catálogo de exercícios se estiver vazio ao iniciar o aplicativo
     try:
         Session = sessionmaker(bind=db)
