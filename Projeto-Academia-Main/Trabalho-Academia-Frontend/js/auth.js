@@ -100,6 +100,7 @@ window.onload = () => {
         isLoggedIn  = true;
         currentRole = isAdmin ? "personal" : "aluno";
         currentUser = { nome: "Usuário" };
+        updateNavbar();       // garante botão de tema mesmo após reload
         navigateTo('dashboard');
     } else {
         updateNavbar();

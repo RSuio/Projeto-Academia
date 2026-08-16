@@ -12,7 +12,6 @@ let draggedTreinoId = null; // id do card sendo arrastado
 async function abrirGradeSemanal(alunoId, nomeAluno) {
     const token = localStorage.getItem('token_academia');
 
-    // Cria o modal
     document.getElementById('modal-grade')?.remove();
     const modal = document.createElement('div');
     modal.id        = 'modal-grade';
@@ -25,7 +24,7 @@ async function abrirGradeSemanal(alunoId, nomeAluno) {
                    <span class="text-slate-400 dark:text-zinc-600 ml-3 text-xs">Arraste os treinos entre os dias</span>
                 </p>
             </div>
-            <button onclick="fecharGradeSemanal()"
+            <button type="button" onclick="fecharGradeSemanal()"
                     class="text-slate-400 hover:text-slate-700 dark:text-zinc-500 dark:hover:text-white p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
@@ -36,10 +35,9 @@ async function abrirGradeSemanal(alunoId, nomeAluno) {
         <div id="grade-content" class="hidden flex-1 overflow-x-auto overflow-y-hidden p-4 bg-slate-50 dark:bg-zinc-950">
             <div id="grade-colunas" class="flex gap-3 h-full min-w-max"></div>
         </div>`;
-    const scrollPos = window.scrollY;   // salva posição atual do scroll
+
     document.body.appendChild(modal);
     document.body.style.overflow = 'hidden';
-    window.scrollTo(0, scrollPos);      // restaura posição imediatamente
 
     // Busca treinos do aluno
     try {
@@ -49,13 +47,15 @@ async function abrirGradeSemanal(alunoId, nomeAluno) {
         if (!response.ok) throw new Error();
         treinosDoAluno = await response.json();
     } catch {
-        document.getElementById('grade-loading').innerHTML =
-            '<p class="text-red-500 font-medium">Erro ao carregar treinos do aluno.</p>';
+        const loadingEl = document.getElementById('grade-loading');
+        if (loadingEl) {
+            loadingEl.innerHTML = '<p class="text-red-500 font-medium">Erro ao carregar treinos do aluno.</p>';
+        }
         return;
     }
 
-    document.getElementById('grade-loading').classList.add('hidden');
-    document.getElementById('grade-content').classList.remove('hidden');
+    document.getElementById('grade-loading')?.classList.add('hidden');
+    document.getElementById('grade-content')?.classList.remove('hidden');
     renderizarGrade();
 }
 
@@ -63,9 +63,9 @@ async function abrirGradeSemanal(alunoId, nomeAluno) {
 // ── Renderiza as colunas da semana ────────────────────────────
 function renderizarGrade() {
     const container = document.getElementById('grade-colunas');
+    if (!container) return;
     container.innerHTML = '';
 
-    // Coluna "Sem dia" + colunas dos dias
     const colunas = ['Sem dia', ...DIAS];
 
     colunas.forEach(dia => {
@@ -74,7 +74,7 @@ function renderizarGrade() {
         );
 
         const col = document.createElement('div');
-        col.className  = 'flex flex-col w-56 shrink-0 h-full';
+        col.className   = 'flex flex-col w-56 shrink-0 h-full';
         col.dataset.dia = dia;
 
         col.innerHTML = `
@@ -85,15 +85,33 @@ function renderizarGrade() {
                 <span class="text-xs text-slate-400 dark:text-zinc-600 font-medium">(${treinos.length})</span>
             </div>
             <div class="drop-zone flex-1 rounded-2xl border-2 border-dashed border-slate-300 dark:border-zinc-800 bg-white/50 dark:bg-zinc-900/40 p-2 space-y-2 min-h-32 transition-all overflow-y-auto"
-                 data-dia="${dia}"
-                 ondragover="onDragOver(event)"
-                 ondragleave="onDragLeave(event)"
-                 ondrop="onDrop(event, '${dia}')">
+                 data-dia="${dia}">
             </div>`;
 
         container.appendChild(col);
 
         const zona = col.querySelector('.drop-zone');
+
+        zona.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            zona.classList.add('border-emerald-500', 'bg-emerald-500/10');
+            zona.classList.remove('border-slate-300', 'dark:border-zinc-800');
+        });
+
+        zona.addEventListener('dragleave', () => {
+            zona.classList.remove('border-emerald-500', 'bg-emerald-500/10');
+            zona.classList.add('border-slate-300', 'dark:border-zinc-800');
+        });
+
+        zona.addEventListener('drop', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            zona.classList.remove('border-emerald-500', 'bg-emerald-500/10');
+            zona.classList.add('border-slate-300', 'dark:border-zinc-800');
+            moverTreinoParaDia(draggedTreinoId, dia);
+        });
+
         treinos.forEach(t => zona.appendChild(criarCardArrastavel(t)));
     });
 }
@@ -107,20 +125,20 @@ function criarCardArrastavel(treino) {
     card.dataset.id  = treino.id;
 
     card.innerHTML = `
-        <div class="flex items-start justify-between gap-2">
+        <div class="flex items-start justify-between gap-2 pointer-events-none">
             <div class="flex-1 min-w-0">
                 <p class="text-slate-900 dark:text-white font-semibold text-sm truncate">${treino.nome}</p>
                 <p class="text-slate-500 dark:text-zinc-400 text-xs mt-0.5">${treino.objetivo || 'Sem objetivo'}</p>
             </div>
             <i class="fa-solid fa-grip-vertical text-slate-400 dark:text-zinc-600 mt-0.5 shrink-0"></i>
         </div>
-        <p class="text-slate-400 dark:text-zinc-500 text-xs mt-2 font-medium">${treino.exercicios?.length ?? 0} exercícios</p>`;
+        <p class="text-slate-400 dark:text-zinc-500 text-xs mt-2 font-medium pointer-events-none">${treino.exercicios?.length ?? 0} exercícios</p>`;
 
-    card.addEventListener('dragstart', e => {
+    card.addEventListener('dragstart', (e) => {
         draggedTreinoId = treino.id;
         card.classList.add('opacity-40', 'scale-95');
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', treino.id.toString());
+        e.dataTransfer.setData('text/plain', '');
     });
 
     card.addEventListener('dragend', () => {
@@ -132,66 +150,42 @@ function criarCardArrastavel(treino) {
 }
 
 
-// ── Eventos de drag and drop nas zonas ───────────────────────
-function onDragOver(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.dataTransfer.dropEffect = 'move';
-    e.currentTarget.classList.add('border-emerald-500', 'bg-emerald-500/10');
-    e.currentTarget.classList.remove('border-slate-300', 'border-zinc-800');
-}
+// ── Move treino e persiste no backend ─────────────────────────
+async function moverTreinoParaDia(treinoId, dia) {
+    if (!treinoId) return;
 
-function onDragLeave(e) {
-    e.stopPropagation();
-    e.currentTarget.classList.remove('border-emerald-500', 'bg-emerald-500/10');
-    e.currentTarget.classList.add('border-slate-300', 'dark:border-zinc-800');
-}
-
-async function onDrop(e, dia) {
-    e.preventDefault();
-    e.stopPropagation();
-    const zona = e.currentTarget;
-    zona.classList.remove('border-emerald-500', 'bg-emerald-500/10');
-    zona.classList.add('border-slate-300', 'dark:border-zinc-800');
-
-    if (!draggedTreinoId) return;
-
-    const token      = localStorage.getItem('token_academia');
-    const novoDia    = dia === 'Sem dia' ? null : dia;
-    const treinoId   = draggedTreinoId;
-
-    // Atualiza otimisticamente no cache local
-    const treino = treinosDoAluno.find(t => t.id === treinoId);
+    const novoDia  = dia === 'Sem dia' ? null : dia;
+    const treino   = treinosDoAluno.find(t => t.id === treinoId);
     if (!treino) return;
+
+    // Se o treino já está neste dia, não precisa atualizar
+    if (treino.dia_semana === novoDia) return;
+
+    // Atualiza otimisticamente no cache local e atualiza a interface
     treino.dia_semana = novoDia;
+    renderizarGrade();
 
-    // Agenda a atualização do DOM e API para o próximo ciclo de eventos,
-    // garantindo que o navegador termine de processar o evento de drop nativo
-    // sem disparar comportamentos padrão (como recarregamento de página).
-    setTimeout(async () => {
-        // Re-renderiza a grade
-        renderizarGrade();
+    // Notificação visual toast
+    showToast(`Treino movido para ${novoDia || 'sem dia definido'} com sucesso!`);
 
-        // Persiste no backend
-        try {
-            const response = await fetch(`${URL_BACKEND}/treinos/${treinoId}/dia`, {
-                method:  'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify({ dia_semana: novoDia })
-            });
+    // Salva a alteração no backend
+    const token = localStorage.getItem('token_academia');
+    try {
+        const response = await fetch(`${URL_BACKEND}/treinos/${treinoId}/dia`, {
+            method:  'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ dia_semana: novoDia })
+        });
 
-            if (!response.ok) {
-                showToast('Erro ao salvar o dia do treino.', true);
-            } else {
-                showToast(`Treino movido para ${novoDia || 'sem dia definido'}.`);
-            }
-        } catch {
-            showToast('Erro de conexão.', true);
+        if (!response.ok) {
+            showToast('Erro ao salvar alteração no servidor.', true);
         }
-    }, 0);
+    } catch {
+        showToast('Erro de conexão ao salvar.', true);
+    }
 }
 
 
@@ -201,10 +195,12 @@ function fecharGradeSemanal() {
     document.body.style.overflow = '';
 }
 
-// Previne comportamento padrão de abrir elementos arrastados como links/pesquisas quando soltos fora das colunas
-window.addEventListener("dragover", function(e) {
+
+// ── Prevenção global de navegação por drop no navegador ────────
+window.addEventListener('dragover', (e) => {
     e.preventDefault();
 }, false);
-window.addEventListener("drop", function(e) {
+
+window.addEventListener('drop', (e) => {
     e.preventDefault();
 }, false);
