@@ -40,12 +40,14 @@ class ExercicioCatalogo(Base):
     equipamento = Column(String, nullable=True)           
     musculo_principal = Column(String, nullable=True)
     musculo_secundario = Column(String, nullable=True)
+    video_url = Column(String, nullable=True)
 
     usos = relationship("TreinoExercicio", backref="catalogo", cascade="all, delete-orphan")
 
     def __init__(self, api_id, nome, nome_en=None, descricao=None,
                  categoria=None, equipamento=None,
-                 musculo_principal=None, musculo_secundario=None):
+                 musculo_principal=None, musculo_secundario=None,
+                 video_url=None):
         self.api_id = api_id
         self.nome = nome
         self.nome_en = nome_en
@@ -54,6 +56,7 @@ class ExercicioCatalogo(Base):
         self.equipamento = equipamento
         self.musculo_principal = musculo_principal
         self.musculo_secundario = musculo_secundario
+        self.video_url = video_url
 
 
 class Treino(Base):
