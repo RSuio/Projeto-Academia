@@ -68,13 +68,24 @@ async function carregarExerciciosPorCategoria(categoria) {
 
         exercicios.forEach(ex => {
             const card = document.createElement('div');
-            card.className = "bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 hover:border-emerald-500 shadow-xs rounded-xl p-3 cursor-pointer transition-all text-center flex flex-col items-center gap-2 group hover:-translate-y-1";
+            card.className = "bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 hover:border-emerald-500 shadow-xs rounded-xl p-3 cursor-pointer transition-all text-center flex flex-col items-center gap-2 group hover:-translate-y-1 relative";
 
             card.onclick = () => adicionarExercicioAoTreino(ex.id, ex.nome);
 
+            const safeNome  = encodeURIComponent(ex.nome);
+            const safeVideo = encodeURIComponent(ex.video_url || '');
+
             card.innerHTML = `
-                <div class="w-10 h-10 bg-slate-100 dark:bg-zinc-900 rounded-full flex items-center justify-center text-slate-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 transition-colors">
-                    <i class="fa-solid fa-dumbbell"></i>
+                <div class="relative w-full flex justify-center">
+                    <div class="w-10 h-10 bg-slate-100 dark:bg-zinc-900 rounded-full flex items-center justify-center text-slate-500 dark:text-zinc-400 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:bg-emerald-50 dark:group-hover:bg-emerald-500/10 transition-colors">
+                        <i class="fa-solid fa-dumbbell"></i>
+                    </div>
+                    <button type="button" 
+                            onclick="event.stopPropagation(); abrirModalVideo('${safeNome}', '${safeVideo}')" 
+                            title="Ver vídeo demonstrativo"
+                            class="absolute top-0 right-0 w-6 h-6 rounded-full bg-slate-100 dark:bg-zinc-900 hover:bg-emerald-600 hover:text-white dark:hover:bg-emerald-500 dark:hover:text-black text-slate-400 dark:text-zinc-500 text-[10px] flex items-center justify-center transition-colors shadow-2xs">
+                        <i class="fa-solid fa-play"></i>
+                    </button>
                 </div>
                 <span class="text-xs font-semibold text-slate-800 dark:text-zinc-200 group-hover:text-emerald-600 dark:group-hover:text-white leading-tight">${ex.nome}</span>
                 <span class="text-[10px] text-slate-400 dark:text-zinc-500 w-full line-clamp-1" title="${ex.equipamento || 'Livre'}">${ex.equipamento || 'Livre'}</span>
