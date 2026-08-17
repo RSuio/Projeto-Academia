@@ -32,6 +32,7 @@ class ExercicioCatalogoRead(BaseModel):
     equipamento: Optional[str] = None
     musculo_principal: Optional[str] = None
     musculo_secundario: Optional[str] = None
+    video_url: Optional[str] = None
 
     class Config:
         from_attributes = True
@@ -50,6 +51,7 @@ class TreinoExercicioRead(BaseModel):
     id: int
     exercicio_catalogo_id: int
     nome_exercicio: Optional[str] = None
+    video_url: Optional[str] = None
     series: int
     repeticoes: int
     carga: Optional[float] = None
@@ -64,6 +66,7 @@ class TreinoExercicioRead(BaseModel):
                 "id":                     data.id,
                 "exercicio_catalogo_id":  data.exercicio_catalogo_id,
                 "nome_exercicio":         data.catalogo.nome,
+                "video_url":              getattr(data.catalogo, "video_url", None),
                 "series":                 data.series,
                 "repeticoes":             data.repeticoes,
                 "carga":                  data.carga,
