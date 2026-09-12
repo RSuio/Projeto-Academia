@@ -1,226 +1,218 @@
-# ForgeFit — Plataforma de Gestão de Academia
+# 🏋️ ForgeFit — Sistema de Gestão de Academia
 
-Sistema web completo para gerenciamento de academias, com cadastro de alunos e personal trainers, criação e acompanhamento de treinos, relatórios de progresso e um **catálogo público de personal trainers** com academias e horários de atuação.
+Sistema web para gestão de treinos em academias, conectando **alunos** e **personal trainers**. Permite montar treinos personalizados, acompanhar progresso, definir objetivos e gerenciar o vínculo entre personais, alunos e academias.
 
-O projeto é dividido em duas partes:
-
-- **`Trabalho-Academia-Backend`** — API REST em FastAPI (Python) com SQLite, autenticação JWT, migrações Alembic e testes automatizados.
-- **`Trabalho-Academia-Frontend`** — interface single page em HTML + Tailwind CSS + JavaScript puro.
+Projeto acadêmico desenvolvido com **FastAPI** no back-end e **HTML/CSS/JavaScript puro** no front-end.
 
 ---
 
-## Funcionalidades
+## 📋 Índice
 
-### Para o aluno
-
-- Criar conta e receber treinos criados pelo personal trainer.
-- Visualizar seus treinos e marcar os treinos realizados.
-- Acompanhar progresso diário e mensal (frequência).
-- Definir e acompanhar seu objetivo de treinos.
-- Ver o **Meu Personal** vinculado: nome, especialidade, bio e as academias/horários em que ele atua.
-
-### Para o personal trainer (admin)
-
-- Criar conta com especialidade e bio.
-- Cadastrar **Minha Atuação**: academias onde atende, dias da semana e horários (adicionar, editar e remover).
-- Cadastrar novas academias.
-- Gerenciar lista de alunos e **vincular/desvincular** alunos ao próprio acompanhamento.
-- Criar treinos completos a partir de um catálogo de exercícios com séries, repetições, carga e observações.
-- Definir objetivos e consultar o progresso de cada aluno.
-
-### Público (sem login)
-
-- Vitrine de personal trainers disponíveis, com filtro por academia e busca por nome/especialidade.
-- Lista de academias da rede.
+- [Funcionalidades](#-funcionalidades)
+- [Tecnologias](#-tecnologias)
+- [Arquitetura](#-arquitetura)
+- [Padrões de Projeto](#-padrões-de-projeto)
+- [Estrutura de Pastas](#-estrutura-de-pastas)
+- [Como Executar](#-como-executar)
+- [Endpoints da API](#-endpoints-da-api)
+- [Testes](#-testes)
+- [Autores](#-autores)
 
 ---
 
-## Estrutura do projeto
+## ✨ Funcionalidades
+
+**Autenticação**
+- Cadastro e login com e-mail e senha (senhas criptografadas com `bcrypt`)
+- Autenticação via **JWT**, com suporte a login tradicional e login via formulário OAuth2 (compatível com o Swagger UI)
+
+**Alunos**
+- Montagem de treinos personalizados, com exercícios, séries, repetições e carga
+- Organização de treinos por dia da semana
+- Vínculo com um personal trainer
+- Registro de treinos realizados e histórico
+- Definição de objetivos (meta de treinos em um período) com acompanhamento de progresso
+- Relatórios de progresso semanais e mensais
+- Catálogo de exercícios com filtros (nome, categoria, equipamento, músculo) e vídeos demonstrativos do YouTube
+
+**Personal Trainers**
+- Gestão dos próprios alunos
+- Vínculo com uma ou mais academias, com dias e horários de atuação
+- Edição de perfil (especialidade, biografia)
+
+**Administração**
+- Cadastro de academias
+- Cadastro e gerenciamento do catálogo de exercícios (CRUD completo)
+
+---
+
+## 🛠️ Tecnologias
+
+### Back-end
+| Tecnologia | Uso |
+|---|---|
+| [FastAPI](https://fastapi.tiangolo.com/) | Framework web para a API REST |
+| [SQLAlchemy](https://www.sqlalchemy.org/) | ORM para acesso ao banco de dados |
+| [Alembic](https://alembic.sqlalchemy.org/) | Migrações de banco de dados |
+| SQLite | Banco de dados |
+| [python-jose](https://github.com/mpdavis/python-jose) | Geração e validação de tokens JWT |
+| [passlib](https://passlib.readthedocs.io/) + bcrypt | Hash e verificação de senhas |
+| [Pydantic](https://docs.pydantic.dev/) | Validação de dados e schemas |
+| [Uvicorn](https://www.uvicorn.org/) | Servidor ASGI |
+| [Pytest](https://docs.pytest.org/) | Testes automatizados |
+
+### Front-end
+- HTML5, CSS3 e JavaScript (Vanilla, sem frameworks)
+- Consumo da API via `fetch`
+
+---
+
+## 🏗️ Arquitetura
+
+O back-end segue uma separação em camadas inspirada em **MVC**:
+
+```
+Rota (routes)  →  Controller  →  Model (SQLAlchemy)
+     ↓
+  Schema (Pydantic) para validação e serialização
+```
+
+- **`routes/`** — definem os endpoints, validam autenticação e delegam a lógica ao controller
+- **`controllers/`** — contêm a lógica de negócio de cada domínio (autenticação, treinos, exercícios, etc.)
+- **`database/models.py`** — modelos SQLAlchemy e definição das tabelas
+- **`schemas/schemas.py`** — schemas Pydantic para entrada/saída da API
+- **`core/security.py`** — configuração de criptografia e OAuth2
+- **`api/dependencies.py`** — dependências reutilizáveis do FastAPI, como verificação de token JWT e checagem de permissão de administrador
+
+A autenticação é feita via **Bearer Token (JWT)**: o token é obtido no login e enviado no header `Authorization` das requisições protegidas. A dependência `verificar_token` decodifica o token e injeta o usuário autenticado nas rotas.
+
+---
+
+## 🎨 Padrões de Projeto
+
+O projeto aplica dois padrões de projeto clássicos, documentados no próprio código-fonte em `app/patterns/`:
+
+### Strategy — Filtros de Exercícios
+Cada critério de busca do catálogo de exercícios (nome, categoria, equipamento, músculo) é implementado como uma estratégia independente (`FiltroExercicioStrategy`). O `FiltroExercicioContext` recebe uma lista de estratégias e as aplica em sequência à query do banco, permitindo adicionar novos filtros sem alterar o controller existente.
+
+### Template Method — Relatórios de Progresso
+A geração de relatórios (semanal e mensal) segue sempre o mesmo esqueleto de passos — buscar registros, processar e formatar — definido na classe abstrata `RelatorioProgresso`. As subclasses `RelatorioPorSemana` e `RelatorioPorMes` sobrescrevem apenas os passos que mudam entre um tipo de relatório e outro.
+
+---
+
+## 📁 Estrutura de Pastas
 
 ```
 Projeto-Academia/
 ├── Trabalho-Academia-Backend/
 │   ├── app/
-│   │   ├── api/routes/         # Endpoints (auth, alunos, treinos, exercícios, progresso, objetivos, academias, personais)
-│   │   ├── controllers/        # Regras de negócio
-│   │   ├── core/               # Segurança (JWT, bcrypt)
-│   │   ├── database/           # Modelos SQLAlchemy + banco SQLite
-│   │   ├── patterns/           # Padrões de projeto (Strategy e Template Method)
-│   │   └── schemas/            # Schemas Pydantic
-│   ├── alembic/versions/       # Migrações de banco
-│   ├── tests/                  # Testes automatizados (pytest)
-│   ├── main.py                 # Aplicação FastAPI
-│   ├── popular_personais.py    # Seed de academias e personais de demonstração
-│   ├── popular_portugues.py    # Catálogo de exercícios em português
+│   │   ├── api/
+│   │   │   ├── routes/          # Endpoints da API (auth, alunos, treinos, exercícios, ...)
+│   │   │   └── dependencies.py  # Autenticação e injeção de dependências
+│   │   ├── controllers/         # Lógica de negócio
+│   │   ├── core/
+│   │   │   └── security.py      # Hash de senha e configuração OAuth2
+│   │   ├── database/
+│   │   │   └── models.py        # Modelos SQLAlchemy
+│   │   ├── patterns/            # Strategy e Template Method
+│   │   └── schemas/
+│   │       └── schemas.py       # Schemas Pydantic
+│   ├── alembic/                 # Migrações do banco de dados
+│   ├── tests/                   # Testes automatizados (pytest)
+│   ├── main.py                  # Ponto de entrada da aplicação
+│   ├── popular_portugues.py     # Popula o catálogo de exercícios (PT-BR)
+│   ├── popular_personais.py     # Popula dados de exemplo de personais
 │   └── requirements.txt
 └── Trabalho-Academia-Frontend/
-    ├── index.html              # Página única (Tailwind CSS)
+    ├── index.html
     ├── style.css
-    └── js/                     # Módulos JS por funcionalidade (auth, navegação, treinos, personais, atuação, alunos, progresso...)
+    └── js/                      # Scripts por funcionalidade (auth, treinos, progresso, ...)
 ```
-
-## Tecnologias
-
-| Camada    | Tecnologias |
-|-----------|-------------|
-| Backend   | Python 3.11+, FastAPI, SQLAlchemy, Pydantic, JWT (python-jose), bcrypt/passlib |
-| Banco     | SQLite, Alembic (migrações) |
-| Frontend  | HTML5, Tailwind CSS (CDN), JavaScript puro |
-| Testes    | pytest, TestClient |
 
 ---
 
-## Como executar
+## 🚀 Como Executar
 
-### 1. Backend
+### Pré-requisitos
+- Python 3.11+
+- Um servidor de arquivos estático simples (ex: extensão *Live Server* do VS Code) para o front-end
 
+### 1. Clonar o repositório
+```bash
+git clone <url-do-repositorio>
+cd Projeto-Academia
+```
+
+### 2. Configurar o back-end
 ```bash
 cd Trabalho-Academia-Backend
 
-# Opcional: criar e ativar um ambiente virtual
+# Criar e ativar um ambiente virtual
 python -m venv venv
-venv\Scripts\activate        # Windows
-source venv/bin/activate     # Linux/macOS
+venv\Scripts\activate      # Windows
+source venv/bin/activate   # Linux/Mac
 
 # Instalar dependências
 pip install -r requirements.txt
-
-# Aplicar migrações do banco
-python -m alembic upgrade head
-
-# Subir a API
-python -m uvicorn main:app --reload
 ```
 
-A API fica disponível em `http://127.0.0.1:8000` e a documentação interativa (Swagger) em `http://127.0.0.1:8000/docs`.
+Crie um arquivo `.env` na raiz do back-end com as seguintes variáveis:
+```env
+SECRET_KEY=sua_chave_secreta_aqui
+ALGORITHM=HS256
+DATABASE_URL=sqlite:///./app/database/banco.db
+```
 
-No primeiro acesso, o banco SQLite é criado automaticamente e o catálogo de exercícios (em português) é populado sozinho.
+> ⚠️ Nunca use uma chave de exemplo em produção. Gere uma chave forte e mantenha o `.env` fora do controle de versão.
 
-### 2. Frontend
-
+### 3. Rodar as migrações (opcional — o banco já é criado automaticamente)
 ```bash
-cd Trabalho-Academia-Frontend
+alembic upgrade head
 ```
 
-Abra o `index.html` com qualquer servidor estático — por exemplo a extensão **Live Server** do VS Code (porta 5500) — ou use:
-
+### 4. Iniciar o servidor
 ```bash
-python -m http.server 5500
+uvicorn main:app --reload
 ```
+A API ficará disponível em `http://127.0.0.1:8000`, com a documentação interativa (Swagger) em `http://127.0.0.1:8000/docs`.
 
-Acesse `http://127.0.0.1:5500`.
+Ao subir pela primeira vez, o catálogo de exercícios em português é populado automaticamente.
 
-> O frontend já está configurado para consumir a API em `http://127.0.0.1:8000`.
-> Para alterar, edite a constante `URL_BACKEND` em `js/auth.js`.
-
-### 3. Dados de demonstração (opcional)
-
-Para criar academias (ForgeFit) e personais trainers de exemplo e vincular alunos a eles:
-
-```bash
-cd Trabalho-Academia-Backend
-python popular_personais.py
-```
-
-Contas de personal criadas pelo script usam a senha:
-
-```
-personais: <email cadastrado> / personal123
-```
+### 5. Rodar o front-end
+Abra `Trabalho-Academia-Frontend/index.html` com o *Live Server* (ou outro servidor estático) em `http://127.0.0.1:5500` — a URL da API já está configurada no front-end para `http://127.0.0.1:8000`.
 
 ---
 
-## Autenticação e perfis
+## 🔌 Endpoints da API
 
-O sistema usa **JWT Bearer** (`Authorization: Bearer <token>`), obtido via `POST /auth/login`.
+| Recurso | Prefixo | Descrição |
+|---|---|---|
+| Autenticação | `/auth` | Cadastro, login (JSON e formulário OAuth2) |
+| Alunos | `/alunos` | Listagem, vínculo com personal |
+| Treinos | `/treinos` | CRUD de treinos e organização por dia da semana |
+| Exercícios | `/exercicios` | Catálogo de exercícios, filtros e categorias |
+| Progresso | `/progresso` | Registro de treinos realizados, histórico e relatórios |
+| Objetivos | `/objetivos` | Metas de treino e acompanhamento |
+| Academias | `/academias` | Cadastro de academias |
+| Personais | `/personais` | Perfil do personal e vínculo com academias |
 
-Existem dois perfis de usuário:
-
-| Perfil | Campo `admin` | Acesso |
-|--------|---------------|--------|
-| `aluno` | `false` | Treinos, progresso, objetivo e "Meu Personal" |
-| `personal` | `true` | Tudo do aluno + catálogo de alunos, criação de treinos, academias e atuação |
-
----
-
-## API (principais endpoints)
-
-### Públicos
-
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| POST | `/auth/criar_conta` | Cria conta (aluno ou personal, com `especialidade`/`bio` opcionais) |
-| POST | `/auth/login` | Autentica e retorna o token JWT |
-| GET | `/personais/` | Catálogo público de personal trainers (`?academia_id=` filtra por academia) |
-| GET | `/academias/` | Lista academias |
-| GET | `/exercicios/` | Catálogo de exercícios (filtros por nome, categoria, equipamento, músculo) |
-
-### Autenticados
-
-| Método | Rota | Acesso | Descrição |
-|--------|------|--------|-----------|
-| GET | `/alunos/meu-personal` | aluno | Personal vinculado ao aluno logado (academias e horários) |
-| GET/POST | `/treinos/` | ambos | Lista/cria treinos |
-| DELETE | `/treinos/{id}` | ambos | Exclui treino |
-| GET | `/treinos/aluno/{usuario_id}` | personal | Treinos de um aluno |
-| GET/POST | `/progresso/` | aluno | Dashboard e registro de treino realizado |
-| GET | `/progresso/historico` | aluno | Histórico de treinos realizados |
-| GET | `/progresso/relatorio-mensal` | aluno | Relatório mensal |
-| GET/POST | `/objetivos/` | aluno | Objetivo do aluno |
-| GET | `/objetivos/aluno/{usuario_id}` | personal | Objetivo de um aluno |
-
-### Personais (admin)
-
-| Método | Rota | Descrição |
-|--------|------|-----------|
-| GET | `/personais/me` | Perfil completo do personal (vínculos ativos e inativos) |
-| PATCH | `/personais/me` | Atualiza `especialidade`/`bio` |
-| POST | `/personais/me/academias` | Adiciona academia + dias + horários à própria atuação |
-| PATCH | `/personais/academias/{id}` | Edita dias/horários/ativo de um vínculo |
-| DELETE | `/personais/academias/{id}` | Remove um vínculo |
-| POST | `/academias/` | Cadastra uma nova academia |
-| GET | `/alunos/` | Lista todos os alunos (com `personal_id`) |
-| PATCH | `/alunos/{id}/personal` | Vincula (`personal_id`) ou desvincula (`null`) um aluno |
+A lista completa de rotas e seus parâmetros está disponível na documentação interativa em `/docs` após iniciar o servidor.
 
 ---
 
-## Modelo de dados
+## ✅ Testes
 
-- **usuarios** — alunos e personais (campo `admin` diferencia; `personal_id` vincula o aluno ao seu personal).
-- **exercicios_catalogo** — catálogo de exercícios com nome, categoria, equipamento e músculos.
-- **treinos** e **treino_exercicios** — treinos e seus exercícios (séries, repetições, carga, ordem).
-- **treinos_realizados** — registros de treinos concluídos para o progresso.
-- **objetivos_aluno** — meta de treinos por período.
-- **academias** — academias da rede.
-- **personal_academia** — vínculo personal ↔ academia com dias da semana, horários e status ativo.
-
----
-
-## Padrões de projeto aplicados
-
-- **Strategy** — `app/patterns/strategy_filtros.py`: filtros do catálogo de exercícios (nome, categoria, equipamento, músculo) como estratégias intercambiáveis, permitindo adicionar novos filtros sem alterar o controller.
-- **Template Method** — `app/patterns/template_method_relatorio.py`: relatórios de progresso (semanal e mensal) com o mesmo esqueleto de passos, variando apenas a implementação de cada etapa.
-
----
-
-## Testes
+O projeto inclui testes automatizados com **pytest** para as regras de cadastro de usuários e personais:
 
 ```bash
 cd Trabalho-Academia-Backend
-python -m pytest tests/ -v
+python -m pytest -v
 ```
 
-Cobertura principal (15 testes): cadastro de usuário, catálogo de personais, filtros por academia, permissões de admin, vínculo aluno↔personal e gestão de atuação do personal.
-
 ---
 
-## Observações para publicar no GitHub
+## 👥 Autores
 
-- O arquivo `Trabalho-Academia-Backend/.env` contém a `SECRET_KEY` e a conexão do banco. **Não o suba ao repositório** — adicione `*.env` ao `.gitignore` e crie um `.env.example` com as chaves sem valores reais.
-- O banco `app/database/banco.db` não deve ser versionado (ele é criado automaticamente na primeira execução).
+Projeto desenvolvido como trabalho acadêmico.
 
----
-
-## Licença
-
-Projeto acadêmico — uso livre para fins educacionais.
+> Sinta-se à vontade para adicionar aqui os nomes da equipe, a disciplina e a instituição.
