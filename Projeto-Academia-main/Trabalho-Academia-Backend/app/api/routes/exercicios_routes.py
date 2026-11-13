@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from typing import List
 from app.api.dependencies import pegar_sessao
-from app.schemas.schemas import ExercicioCatalogoRead
+from app.schemas.schemas import ExercicioCatalogoRead, ExercicioCatalogoCreate
 from app.controllers import exercicios_controller
 
 router = APIRouter(prefix="/exercicios", tags=["Exercícios"])
@@ -29,7 +29,7 @@ def listar_categorias(session: Session = Depends(pegar_sessao)):
 
 @router.post("/", response_model=ExercicioCatalogoRead, status_code=201)
 def criar_exercicio(
-    exercicio: ExercicioCatalogoRead,
+    exercicio: ExercicioCatalogoCreate,
     session: Session = Depends(pegar_sessao)
 ):
     return exercicios_controller.criar_exercicio(session, exercicio)
@@ -41,7 +41,7 @@ def buscar_exercicio(exercicio_id: int, session: Session = Depends(pegar_sessao)
 @router.put("/{exercicio_id}", response_model=ExercicioCatalogoRead)
 def atualizar_exercicio(
     exercicio_id: int, 
-    exercicio: ExercicioCatalogoRead,
+    exercicio: ExercicioCatalogoCreate,
     session: Session = Depends(pegar_sessao)
 ):
     return exercicios_controller.atualizar_exercicio(session, exercicio_id, exercicio)

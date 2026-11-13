@@ -19,8 +19,8 @@ async def cadastrar_treino_com_exercicios(dados: TreinoCreate, admin=Depends(ver
 
 
 @treinos.delete("/{treino_id}", status_code=status.HTTP_200_OK)
-def deletar_treino(treino_id: int, usuario_logado=Depends(verificar_token), session: Session = Depends(pegar_sessao)):
-    return treinos_controller.destroy(treino_id, usuario_logado, session)
+def deletar_treino(treino_id: int, admin=Depends(verificar_admin), session: Session = Depends(pegar_sessao)):
+    return treinos_controller.destroy(treino_id, admin, session)
 
 
 @treinos.get("/aluno/{usuario_id}", response_model=List[TreinoRead])

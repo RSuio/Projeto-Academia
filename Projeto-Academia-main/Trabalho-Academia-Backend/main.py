@@ -2,7 +2,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import sessionmaker
-import os
 
 from app.api.routes.auth_routes       import auth
 from app.api.routes.alunos_routes     import alunos
@@ -12,10 +11,9 @@ from app.api.routes.progresso_routes  import progresso
 from app.api.routes.objetivo_routes   import objetivos
 from app.api.routes.academias_routes  import academias
 from app.api.routes.personais_routes  import personais
+from app.api.routes.chat_routes       import chat
 from app.database.models              import db, ExercicioCatalogo
 from popular_portugues                import popular_catalogo
-
-ACESS_TOKEN_EXPIRE_MINUTES = str(os.getenv("ACESS_TOKEN_EXPIRE_MINUTES"))
 
 from sqlalchemy import text
 
@@ -56,7 +54,8 @@ origins = [
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
-    allow_origin_regex=".*",         
+    # Libera apenas origens locais (qualquer porta), em vez de qualquer site na internet.
+    allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=True,           
     allow_methods=["*"],             
     allow_headers=["*"],              
@@ -70,5 +69,7 @@ app.include_router(progresso)
 app.include_router(objetivos)
 app.include_router(academias)
 app.include_router(personais)
+app.include_router(chat)
 
-# para rodar o nosso codigo, executrar no terminal: py -3.11 -m uvicorn main:app --reload
+# para rodar o nosso codigo, executar no terminal: python -m uvicorn main:app --reload
+# (rode dentro da pasta Trabalho-Academia-Backend)

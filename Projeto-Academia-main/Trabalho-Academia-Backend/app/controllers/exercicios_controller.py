@@ -39,10 +39,15 @@ def listar_categorias(session: Session):
 
 def criar_exercicio(session: Session, dados_exercicio):
     novo_exercicio = ExercicioCatalogo(
+        api_id=dados_exercicio.api_id,
         nome=dados_exercicio.nome,
+        nome_en=dados_exercicio.nome_en,
+        descricao=dados_exercicio.descricao,
         categoria=dados_exercicio.categoria,
         equipamento=dados_exercicio.equipamento,
-        api_id=dados_exercicio.api_id
+        musculo_principal=dados_exercicio.musculo_principal,
+        musculo_secundario=dados_exercicio.musculo_secundario,
+        video_url=dados_exercicio.video_url,
     )
     session.add(novo_exercicio)
     session.commit()
@@ -59,8 +64,13 @@ def atualizar_exercicio(session: Session, exercicio_id: int, dados_exercicio):
     exercicio = buscar_exercicio_por_id(session, exercicio_id)
     
     exercicio.nome = dados_exercicio.nome
+    exercicio.nome_en = dados_exercicio.nome_en
+    exercicio.descricao = dados_exercicio.descricao
     exercicio.categoria = dados_exercicio.categoria
     exercicio.equipamento = dados_exercicio.equipamento
+    exercicio.musculo_principal = dados_exercicio.musculo_principal
+    exercicio.musculo_secundario = dados_exercicio.musculo_secundario
+    exercicio.video_url = dados_exercicio.video_url
     
     session.commit()
     session.refresh(exercicio)

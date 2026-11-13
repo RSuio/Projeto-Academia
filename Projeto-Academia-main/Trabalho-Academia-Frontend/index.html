@@ -446,6 +446,48 @@
         </div>
     </section>
 
+    <!-- ═══════════════════════════════════════════
+         CHATBOT FLUTUANTE
+    ════════════════════════════════════════════ -->
+    <button id="chat-toggle" onclick="toggleChat()"
+            class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 w-14 h-14 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-2xl flex items-center justify-center transition-transform hover:scale-105"
+            aria-label="Abrir chat">
+        <i class="fa-solid fa-comments text-xl"></i>
+    </button>
+
+    <div id="chat-panel"
+         class="hidden fixed inset-x-4 bottom-20 sm:inset-x-auto sm:right-6 sm:bottom-24 sm:w-[380px] z-40 h-[520px] max-h-[75vh] bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-slate-200 dark:border-zinc-800 flex flex-col overflow-hidden">
+        <div class="flex items-center justify-between px-5 py-4 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-black shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-white/20 dark:bg-black/10 flex items-center justify-center">
+                    <i class="fa-solid fa-robot"></i>
+                </div>
+                <div>
+                    <p class="font-bold leading-tight">ForgeFit Bot</p>
+                    <p class="text-xs opacity-80">Assistente virtual</p>
+                </div>
+            </div>
+            <button onclick="toggleChat()" class="w-8 h-8 rounded-full hover:bg-white/20 dark:hover:bg-black/10" aria-label="Fechar chat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div id="chat-messages" aria-live="polite"
+             class="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-4 space-y-3 bg-slate-50 dark:bg-zinc-950"></div>
+
+        <form id="chat-form" onsubmit="enviarMensagemChat(event)"
+              class="p-3 border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0 flex items-center gap-2">
+            <input id="chat-input" type="text" autocomplete="off" maxlength="1000"
+                   placeholder="Pergunte sobre treinos, progresso..."
+                   class="flex-1 min-w-0 px-4 py-3 rounded-2xl bg-slate-100 dark:bg-zinc-800 text-sm outline-none focus:ring-2 ring-emerald-500/40">
+            <button type="submit"
+                    class="w-11 h-11 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center shrink-0"
+                    aria-label="Enviar mensagem">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+
     <!-- Toast de avisos -->
     <div id="toast" class="hidden fixed bottom-6 right-6 bg-emerald-600 dark:bg-emerald-500 text-white dark:text-black px-6 py-4 rounded-3xl shadow-2xl flex items-center gap-3 z-[99999] transition-all font-medium">
         <span id="toast-text"></span>
@@ -466,5 +508,6 @@
     <script src="js/progress.js"></script>
     <script src="js/objetivo.js"></script>
     <script src="js/schedule.js"></script>
+    <script src="js/chat.js?v=3"></script>
 </body>
 </html>

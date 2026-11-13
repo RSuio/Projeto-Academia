@@ -1,10 +1,25 @@
+import os
 from sqlalchemy import create_engine, Column, String, Integer, Boolean, Float, ForeignKey, Text, DateTime
 from sqlalchemy.orm import declarative_base, relationship, backref
 from datetime import datetime, timezone
 from pathlib import Path
+from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).resolve().parent
-db = create_engine(f"sqlite:///{BASE_DIR}/banco.db")
+load_dotenv()
+
+BASE_DIR = Path(__file__).resolve().parent      # .../app/database
+BACKEND_DIR = BASE_DIR.parents[1]               # .../Trabalho-Academia-Backend
+
+# Permite configurar o banco via DATABASE_URL (.env). Se não vier, usa o caminho padrão.
+DATABASE_URL = os.getenv("DATABASE_URL") or f"sqlite:///{BASE_DIR.as_posix()}/banco.db"
+
+# Caminhos sqlite relativos são resolvidos a partir da raiz do backend (independente do cwd).
+if DATABASE_URL.startswith("sqlite:///") and not DATABASE_URL.startswith("sqlite:////"):
+    caminho = DATABASE_URL[len("sqlite:///"):]
+    if not Path(caminho).is_absolute():
+        DATABASE_URL = f"sqlite:///{(BACKEND_DIR / caminho).resolve().as_posix()}"
+
+db = create_engine(DATABASE_URL)
 Base = declarative_base()
 
 
@@ -121,7 +136,7 @@ class TreinoRealizado(Base):
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
     data_realizacao = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     observacao = Column(String, nullable=True) 
-    treino  = relationship("Treino", backref="realizacoes")
+    treino  = relationship("Treino", backref=backref("realizacoes", cascade="all, delete-orphan"))
     usuario = relationship("Usuario", backref="treinos_realizados")
 
     def __init__(self, treino_id, usuario_id, observacao=None):

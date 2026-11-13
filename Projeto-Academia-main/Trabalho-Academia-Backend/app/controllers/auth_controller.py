@@ -3,11 +3,11 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timedelta, timezone
 from app.database.models import Usuario
 from app.schemas.schemas import UsuarioSchema, LoginSchema
-from app.core.security import bcrypt_context, ALGORITHM, SECRET_KEY
+from app.core.security import bcrypt_context, ALGORITHM, SECRET_KEY, ACESS_TOKEN_EXPIRE_MINUTES
 from jose import jwt
 
 def criar_token(id_usuario: int) -> str:
-    tempo_expiracao = datetime.now(timezone.utc) + timedelta(hours=24)
+    tempo_expiracao = datetime.now(timezone.utc) + timedelta(minutes=ACESS_TOKEN_EXPIRE_MINUTES)
     payload = {
         "sub": str(id_usuario),
         "exp": tempo_expiracao
@@ -58,7 +58,7 @@ def fazer_login(login_schema: LoginSchema, session: Session):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "expires_in": 86400,
+        "expires_in": ACESS_TOKEN_EXPIRE_MINUTES * 60,
         "is_admin": usuario.admin,
     }
 

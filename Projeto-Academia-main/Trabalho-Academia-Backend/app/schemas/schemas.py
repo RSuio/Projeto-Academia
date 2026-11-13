@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, Field, model_validator
+from pydantic import BaseModel, EmailStr, Field, model_validator, ConfigDict
 from typing import List, Optional
 from datetime import datetime
 
@@ -12,16 +12,14 @@ class UsuarioSchema(BaseModel):
     especialidade: Optional[str] = None
     bio: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class LoginSchema(BaseModel):
     email: str
     senha: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ExercicioCatalogoRead(BaseModel):
@@ -36,8 +34,19 @@ class ExercicioCatalogoRead(BaseModel):
     musculo_secundario: Optional[str] = None
     video_url: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ExercicioCatalogoCreate(BaseModel):
+    api_id: int
+    nome: str
+    nome_en: Optional[str] = None
+    descricao: Optional[str] = None
+    categoria: Optional[str] = None
+    equipamento: Optional[str] = None
+    musculo_principal: Optional[str] = None
+    musculo_secundario: Optional[str] = None
+    video_url: Optional[str] = None
 
 
 class TreinoExercicioCreate(BaseModel):
@@ -77,8 +86,7 @@ class TreinoExercicioRead(BaseModel):
             }
         return data
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 DIAS_SEMANA = ["Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado", "Domingo"]
@@ -113,8 +121,7 @@ class TreinoRead(BaseModel):
     dia_semana: Optional[str] = None
     exercicios: List[TreinoExercicioRead]
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TreinoRealizadoCreate(BaseModel):
@@ -129,8 +136,7 @@ class TreinoRealizadoRead(BaseModel):
     data_realizacao: datetime
     observacao: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class DashboardProgresso(BaseModel):
@@ -168,8 +174,7 @@ class ObjetivoRead(BaseModel):
     data_fim:     datetime
     descricao:    Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class ObjetivoProgresso(BaseModel):
@@ -195,8 +200,7 @@ class AcademiaRead(BaseModel):
     cidade: Optional[str] = None
     telefone: Optional[str] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PersonalVinculoCreate(BaseModel):
@@ -239,10 +243,26 @@ class AlunoRead(BaseModel):
     email: str
     personal_id: Optional[int] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class PersonalPerfilUpdate(BaseModel):
     especialidade: Optional[str] = None
     bio: Optional[str] = None
+
+
+# ── Chatbot ──────────────────────────────────────────────────────────────────
+
+class ChatHistoricoItem(BaseModel):
+    papel: str = Field(default="user", description="'user' ou 'assistant'")
+    conteudo: str = Field(..., min_length=1, max_length=2000)
+
+
+class ChatMensagem(BaseModel):
+    mensagem: str = Field(..., min_length=1, max_length=1000)
+    historico: Optional[List[ChatHistoricoItem]] = None
+
+
+class ChatResposta(BaseModel):
+    resposta: str
+    fonte: str = Field(description="Origem da resposta: 'regras', 'ia' ou 'fallback'")
