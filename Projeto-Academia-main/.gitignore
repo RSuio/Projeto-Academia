@@ -1,1 +1,38 @@
+# ═══════════════════════════════════════════════
+# Segredos / variáveis de ambiente
+# ═══════════════════════════════════════════════
+.env
+*.env
 Trabalho-Academia-Backend/.env
+
+# ═══════════════════════════════════════════════
+# Python
+# ═══════════════════════════════════════════════
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+venv/
+.venv/
+env/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# ═══════════════════════════════════════════════
+# Banco de dados local (dados do usuário)
+# ═══════════════════════════════════════════════
+*.db
+*.sqlite
+*.sqlite3
+
+# ═══════════════════════════════════════════════
+# Editores / Sistema operacional
+# ═══════════════════════════════════════════════
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
