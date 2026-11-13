@@ -1,218 +1,340 @@
-# 🏋️ ForgeFit — Sistema de Gestão de Academia
+<div align="center">
 
-Sistema web para gestão de treinos em academias, conectando **alunos** e **personal trainers**. Permite montar treinos personalizados, acompanhar progresso, definir objetivos e gerenciar o vínculo entre personais, alunos e academias.
+# 💪 ForgeFit
 
-Projeto acadêmico desenvolvido com **FastAPI** no back-end e **HTML/CSS/JavaScript puro** no front-end.
+### Sistema de Gerenciamento de Academia e Treinos
+
+Plataforma web que conecta **alunos**, **personal trainers** e **academias** — com criação de treinos, acompanhamento de progresso, metas e um **chatbot assistente** com IA gratuita opcional.
+
+![Python](https://img.shields.io/badge/Python-3.11%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.135-009688?style=for-the-badge&logo=fastapi&logoColor=white)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-D71F00?style=for-the-badge&logo=sqlalchemy&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![Tests](https://img.shields.io/badge/testes-34%20passando-2ea44f?style=for-the-badge&logo=pytest&logoColor=white)
+
+</div>
 
 ---
 
-## 📋 Índice
+## 📖 Sobre o projeto
 
-- [Funcionalidades](#-funcionalidades)
-- [Tecnologias](#-tecnologias)
-- [Arquitetura](#-arquitetura)
-- [Padrões de Projeto](#-padrões-de-projeto)
-- [Estrutura de Pastas](#-estrutura-de-pastas)
-- [Como Executar](#-como-executar)
-- [Endpoints da API](#-endpoints-da-api)
-- [Testes](#-testes)
-- [Autores](#-autores)
+O **ForgeFit** é um sistema web completo para gerenciamento de academia, desenvolvido como trabalho da disciplina de **Engenharia de Software**.
+
+O personal trainer monta treinos personalizados, vincula alunos, cadastra as academias onde atua e define metas. O aluno visualiza seus treinos, marca treinos como realizados, acompanha o progresso e encontra seu personal. E, para completar, um **chatbot** responde dúvidas sobre treinos, progresso, metas, personal e exercícios.
+
+> 📄 A documentação completa de engenharia (requisitos funcionais/não funcionais, regras de negócio, casos de uso, arquitetura e modelo de dados) está em [`Documento-Trabalho-Academia.txt`](./Documento-Trabalho-Academia.txt).
 
 ---
 
 ## ✨ Funcionalidades
 
-**Autenticação**
-- Cadastro e login com e-mail e senha (senhas criptografadas com `bcrypt`)
-- Autenticação via **JWT**, com suporte a login tradicional e login via formulário OAuth2 (compatível com o Swagger UI)
+### 👤 Aluno
+- Cadastro e login com autenticação JWT
+- Visualização dos treinos (exercícios, séries, repetições e carga)
+- Marcar treino como realizado
+- Dashboard de progresso: total, sequência de dias, frequência semanal e último treino
+- Acompanhamento de meta (objetivo) com percentual e dias restantes
+- Visualização dos dados do personal trainer
 
-**Alunos**
-- Montagem de treinos personalizados, com exercícios, séries, repetições e carga
-- Organização de treinos por dia da semana
-- Vínculo com um personal trainer
-- Registro de treinos realizados e histórico
-- Definição de objetivos (meta de treinos em um período) com acompanhamento de progresso
-- Relatórios de progresso semanais e mensais
-- Catálogo de exercícios com filtros (nome, categoria, equipamento, músculo) e vídeos demonstrativos do YouTube
+### 🧑‍🏫 Personal Trainer
+- Criação de treinos personalizados com exercícios do catálogo
+- Listagem e vínculo de alunos
+- Cadastro de academias e gestão da atuação (dias e horários)
+- Definição de metas para os alunos
+- Exclusão de treinos e alteração do dia da semana
+- Edição do próprio perfil (especialidade e bio)
 
-**Personal Trainers**
-- Gestão dos próprios alunos
-- Vínculo com uma ou mais academias, com dias e horários de atuação
-- Edição de perfil (especialidade, biografia)
-
-**Administração**
-- Cadastro de academias
-- Cadastro e gerenciamento do catálogo de exercícios (CRUD completo)
+### 🌐 Geral
+- Catálogo público de personal trainers com filtros
+- Catálogo com **124 exercícios** em português, com vídeos demonstrativos
+- 🤖 **Chatbot** com arquitetura híbrida (regras + IA opcional)
+- 🌗 Tema claro/escuro
+- 📱 Layout responsivo
 
 ---
 
 ## 🛠️ Tecnologias
 
-### Back-end
+**Backend**
+
 | Tecnologia | Uso |
 |---|---|
-| [FastAPI](https://fastapi.tiangolo.com/) | Framework web para a API REST |
-| [SQLAlchemy](https://www.sqlalchemy.org/) | ORM para acesso ao banco de dados |
-| [Alembic](https://alembic.sqlalchemy.org/) | Migrações de banco de dados |
+| [FastAPI](https://fastapi.tiangolo.com/) | API REST |
+| [SQLAlchemy](https://www.sqlalchemy.org/) | ORM |
+| [Alembic](https://alembic.sqlalchemy.org/) | Migrações |
+| [Pydantic](https://docs.pydantic.dev/) | Validação de dados |
+| [python-jose](https://github.com/mpdavis/python-jose) | Tokens JWT |
+| [Passlib](https://passlib.readthedocs.io/) + Bcrypt | Hash de senhas |
+| [pytest](https://docs.pytest.org/) | Testes automatizados |
 | SQLite | Banco de dados |
-| [python-jose](https://github.com/mpdavis/python-jose) | Geração e validação de tokens JWT |
-| [passlib](https://passlib.readthedocs.io/) + bcrypt | Hash e verificação de senhas |
-| [Pydantic](https://docs.pydantic.dev/) | Validação de dados e schemas |
-| [Uvicorn](https://www.uvicorn.org/) | Servidor ASGI |
-| [Pytest](https://docs.pytest.org/) | Testes automatizados |
 
-### Front-end
-- HTML5, CSS3 e JavaScript (Vanilla, sem frameworks)
-- Consumo da API via `fetch`
+**Frontend**
+
+| Tecnologia | Uso |
+|---|---|
+| HTML5 / CSS3 / JavaScript | Interface (SPA por seções/abas) |
+| [Tailwind CSS](https://tailwindcss.com/) | Estilização e responsividade |
+| [Font Awesome](https://fontawesome.com/) | Ícones |
+
+**IA (opcional e gratuita)**
+
+| Provedor | Modelo padrão |
+|---|---|
+| Google Gemini | `gemini-3.5-flash-lite` |
+| Groq | `openai/gpt-oss-120b` |
 
 ---
 
 ## 🏗️ Arquitetura
 
-O back-end segue uma separação em camadas inspirada em **MVC**:
+Arquitetura **cliente-servidor** em camadas:
 
 ```
-Rota (routes)  →  Controller  →  Model (SQLAlchemy)
-     ↓
-  Schema (Pydantic) para validação e serialização
+┌────────────────────┐        HTTP/JSON        ┌────────────────────┐        ┌──────────────┐
+│  Frontend (SPA)     │  ───────────────────▶   │  API REST (FastAPI) │  ───▶  │  SQLite      │
+│  HTML/CSS/JS        │  ◀───────────────────   │  Controllers/ORM    │  ◀───  │  (SQLAlchemy)│
+└────────────────────┘                         └────────────────────┘        └──────────────┘
 ```
 
-- **`routes/`** — definem os endpoints, validam autenticação e delegam a lógica ao controller
-- **`controllers/`** — contêm a lógica de negócio de cada domínio (autenticação, treinos, exercícios, etc.)
-- **`database/models.py`** — modelos SQLAlchemy e definição das tabelas
-- **`schemas/schemas.py`** — schemas Pydantic para entrada/saída da API
-- **`core/security.py`** — configuração de criptografia e OAuth2
-- **`api/dependencies.py`** — dependências reutilizáveis do FastAPI, como verificação de token JWT e checagem de permissão de administrador
+**Camadas do backend:**
 
-A autenticação é feita via **Bearer Token (JWT)**: o token é obtido no login e enviado no header `Authorization` das requisições protegidas. A dependência `verificar_token` decodifica o token e injeta o usuário autenticado nas rotas.
+```
+app/
+├── api/routes/        # endpoints (rotas)
+├── controllers/       # regras de negócio
+├── schemas/           # contratos Pydantic (entrada/saída)
+├── database/models.py # modelos ORM
+├── core/security.py   # JWT, bcrypt, OAuth2
+└── patterns/          # Strategy e Template Method
+```
+
+**Padrões de projeto aplicados:**
+- 🧩 **Strategy** — filtros do catálogo de exercícios (nome, categoria, equipamento, músculo)
+- 📊 **Template Method** — geração de relatórios de progresso (semanal e mensal)
+- 💉 **Injeção de Dependência** — `Depends` do FastAPI para sessão e autenticação
+- 🗂️ **DTO/Schema** — Pydantic para validação de entrada e saída
 
 ---
 
-## 🎨 Padrões de Projeto
-
-O projeto aplica dois padrões de projeto clássicos, documentados no próprio código-fonte em `app/patterns/`:
-
-### Strategy — Filtros de Exercícios
-Cada critério de busca do catálogo de exercícios (nome, categoria, equipamento, músculo) é implementado como uma estratégia independente (`FiltroExercicioStrategy`). O `FiltroExercicioContext` recebe uma lista de estratégias e as aplica em sequência à query do banco, permitindo adicionar novos filtros sem alterar o controller existente.
-
-### Template Method — Relatórios de Progresso
-A geração de relatórios (semanal e mensal) segue sempre o mesmo esqueleto de passos — buscar registros, processar e formatar — definido na classe abstrata `RelatorioProgresso`. As subclasses `RelatorioPorSemana` e `RelatorioPorMes` sobrescrevem apenas os passos que mudam entre um tipo de relatório e outro.
-
----
-
-## 📁 Estrutura de Pastas
+## 📂 Estrutura do projeto
 
 ```
-Projeto-Academia/
+Projeto-Academia-main/
+├── Documento-Trabalho-Academia.txt     # Documentação de engenharia
+├── README.md
+│
 ├── Trabalho-Academia-Backend/
+│   ├── main.py                         # Aplicação FastAPI
+│   ├── requirements.txt
+│   ├── popular_portugues.py            # Popula o catálogo (124 exercícios)
+│   ├── popular_personais.py
 │   ├── app/
-│   │   ├── api/
-│   │   │   ├── routes/          # Endpoints da API (auth, alunos, treinos, exercícios, ...)
-│   │   │   └── dependencies.py  # Autenticação e injeção de dependências
-│   │   ├── controllers/         # Lógica de negócio
-│   │   ├── core/
-│   │   │   └── security.py      # Hash de senha e configuração OAuth2
-│   │   ├── database/
-│   │   │   └── models.py        # Modelos SQLAlchemy
-│   │   ├── patterns/            # Strategy e Template Method
-│   │   └── schemas/
-│   │       └── schemas.py       # Schemas Pydantic
-│   ├── alembic/                 # Migrações do banco de dados
-│   ├── tests/                   # Testes automatizados (pytest)
-│   ├── main.py                  # Ponto de entrada da aplicação
-│   ├── popular_portugues.py     # Popula o catálogo de exercícios (PT-BR)
-│   ├── popular_personais.py     # Popula dados de exemplo de personais
-│   └── requirements.txt
+│   │   ├── api/                        # Rotas e dependências
+│   │   ├── controllers/                # Regras de negócio
+│   │   ├── core/security.py            # Segurança (JWT/bcrypt)
+│   │   ├── database/models.py          # Modelos ORM
+│   │   ├── patterns/                   # Strategy e Template Method
+│   │   └── schemas/schemas.py          # Schemas Pydantic
+│   └── tests/                          # Testes (pytest)
+│
 └── Trabalho-Academia-Frontend/
     ├── index.html
     ├── style.css
-    └── js/                      # Scripts por funcionalidade (auth, treinos, progresso, ...)
+    └── js/                             # auth, navigation, workouts, chat...
 ```
 
 ---
 
-## 🚀 Como Executar
+## 🚀 Como executar
 
 ### Pré-requisitos
-- Python 3.11+
-- Um servidor de arquivos estático simples (ex: extensão *Live Server* do VS Code) para o front-end
+- **Python 3.11+** (validado no 3.14)
+- Navegador moderno
+- *(Opcional)* Node.js, apenas para validar sintaxe dos JS
 
-### 1. Clonar o repositório
-```bash
-git clone <url-do-repositorio>
-cd Projeto-Academia
-```
+### 1️⃣ Backend
 
-### 2. Configurar o back-end
 ```bash
+# Entre na pasta do backend
 cd Trabalho-Academia-Backend
 
-# Criar e ativar um ambiente virtual
+# (Recomendado) crie um ambiente virtual
 python -m venv venv
-venv\Scripts\activate      # Windows
-source venv/bin/activate   # Linux/Mac
+venv\Scripts\activate        # Windows
+source venv/bin/activate     # Linux/macOS
 
-# Instalar dependências
+# Instale as dependências
 pip install -r requirements.txt
+
+# Configure o .env (veja abaixo)
+
+# Rode o servidor
+python -m uvicorn main:app --reload
 ```
 
-Crie um arquivo `.env` na raiz do back-end com as seguintes variáveis:
+- API: <http://127.0.0.1:8000>
+- Documentação (Swagger): <http://127.0.0.1:8000/docs>
+
+> Na primeira execução, o sistema cria as tabelas e **popula automaticamente** o catálogo com 124 exercícios.
+
+### 2️⃣ Frontend
+
+Abra o `Trabalho-Academia-Frontend/index.html` no navegador ou use a extensão **Live Server**.
+
+### 3️⃣ Testes
+
+```bash
+cd Trabalho-Academia-Backend
+python -m pytest tests/ -q
+```
+
+---
+
+## ⚙️ Configuração (`.env`)
+
+Crie o arquivo `.env` dentro de `Trabalho-Academia-Backend/`:
+
 ```env
+# Banco de dados
+DATABASE_URL=sqlite:///app/database/banco.db
+
+# Autenticação
 SECRET_KEY=sua_chave_secreta_aqui
 ALGORITHM=HS256
-DATABASE_URL=sqlite:///./app/database/banco.db
+ACESS_TOKEN_EXPIRE_MINUTES=1440
+
+# Chatbot (opcional)
+CHATBOT_PROVIDER=gemini
+GEMINI_API_KEY=
+GEMINI_MODEL=gemini-3.5-flash-lite
 ```
 
-> ⚠️ Nunca use uma chave de exemplo em produção. Gere uma chave forte e mantenha o `.env` fora do controle de versão.
-
-### 3. Rodar as migrações (opcional — o banco já é criado automaticamente)
-```bash
-alembic upgrade head
-```
-
-### 4. Iniciar o servidor
-```bash
-uvicorn main:app --reload
-```
-A API ficará disponível em `http://127.0.0.1:8000`, com a documentação interativa (Swagger) em `http://127.0.0.1:8000/docs`.
-
-Ao subir pela primeira vez, o catálogo de exercícios em português é populado automaticamente.
-
-### 5. Rodar o front-end
-Abra `Trabalho-Academia-Frontend/index.html` com o *Live Server* (ou outro servidor estático) em `http://127.0.0.1:5500` — a URL da API já está configurada no front-end para `http://127.0.0.1:8000`.
+> ⚠️ **Nunca** versione o arquivo `.env`. Ele contém segredos.
 
 ---
 
-## 🔌 Endpoints da API
+## 🤖 Chatbot (IA gratuita opcional)
 
-| Recurso | Prefixo | Descrição |
+O chatbot funciona em **3 níveis**, garantindo que nunca quebre:
+
+```
+Pergunta do usuário
+        │
+        ▼
+┌─────────────────────┐
+│ 1. Regras de intenção│  consulta o banco local (sem internet)
+└──────────┬──────────┘
+           │ não encontrou
+           ▼
+┌─────────────────────┐
+│ 2. IA (opcional)     │  Gemini ou Groq, se houver chave no .env
+└──────────┬──────────┘
+           │ sem chave / erro / cota
+           ▼
+┌─────────────────────┐
+│ 3. Fallback          │  resposta padrão + menu de ajuda
+└─────────────────────┘
+```
+
+**Sem chave de API, o bot já funciona apenas com regras.** Para respostas em perguntas abertas, escolha um provedor gratuito:
+
+<details>
+<summary><b>Google Gemini</b> (clique para expandir)</summary>
+
+1. Gere uma chave em <https://aistudio.google.com/apikey>
+2. No `.env`:
+
+```env
+CHATBOT_PROVIDER=gemini
+GEMINI_API_KEY=sua_chave_aqui
+GEMINI_MODEL=gemini-3.5-flash-lite
+```
+
+3. Reinicie o backend.
+
+</details>
+
+<details>
+<summary><b>Groq</b> (clique para expandir)</summary>
+
+1. Gere uma chave em <https://console.groq.com/keys>
+2. No `.env`:
+
+```env
+CHATBOT_PROVIDER=groq
+GROQ_API_KEY=sua_chave_aqui
+GROQ_MODEL=openai/gpt-oss-120b
+```
+
+3. Reinicie o backend.
+
+</details>
+
+> 🔒 A chave fica **apenas no backend** — o frontend nunca a vê.
+
+📘 Detalhes técnicos do assistente (endpoints, intenções, limites) em [`README_CHATBOT.md`](./README_CHATBOT.md).
+
+---
+
+## 🔌 Principais endpoints
+
+| Método | Rota | Descrição |
 |---|---|---|
-| Autenticação | `/auth` | Cadastro, login (JSON e formulário OAuth2) |
-| Alunos | `/alunos` | Listagem, vínculo com personal |
-| Treinos | `/treinos` | CRUD de treinos e organização por dia da semana |
-| Exercícios | `/exercicios` | Catálogo de exercícios, filtros e categorias |
-| Progresso | `/progresso` | Registro de treinos realizados, histórico e relatórios |
-| Objetivos | `/objetivos` | Metas de treino e acompanhamento |
-| Academias | `/academias` | Cadastro de academias |
-| Personais | `/personais` | Perfil do personal e vínculo com academias |
+| `POST` | `/auth/criar_conta` | Cadastro de usuário |
+| `POST` | `/auth/login` | Login (retorna JWT) |
+| `GET` | `/treinos/` | Treinos do usuário logado |
+| `POST` | `/treinos/` | Cria treino (personal) |
+| `GET` | `/exercicios/` | Catálogo com filtros |
+| `POST` | `/progresso/` | Marca treino como realizado |
+| `GET` | `/progresso/` | Dashboard de progresso |
+| `GET` | `/objetivos/` | Meta do aluno com progresso |
+| `GET` | `/personais/` | Catálogo público de personais |
+| `POST` | `/chat/` | Conversa com o chatbot |
+| `GET` | `/chat/status` | Status da IA configurada |
 
-A lista completa de rotas e seus parâmetros está disponível na documentação interativa em `/docs` após iniciar o servidor.
+📚 A lista completa está em <http://127.0.0.1:8000/docs>.
 
 ---
 
-## ✅ Testes
+## 🧪 Testes
 
-O projeto inclui testes automatizados com **pytest** para as regras de cadastro de usuários e personais:
+O projeto conta com **34 testes automatizados** (todos passando):
 
-```bash
-cd Trabalho-Academia-Backend
-python -m pytest -v
-```
+| Arquivo | Testes | Cobre |
+|---|---|---|
+| `test_cadastro.py` | 2 | Cadastro e autenticação |
+| `test_chat.py` | 19 | Regras, fallback e IA simulada |
+| `test_personais.py` | 13 | Personais, vínculos e catálogo |
+
+Os testes usam banco em memória/cópias temporárias — o banco real não é alterado.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Migrar para PostgreSQL em produção
+- [ ] Recuperação de senha e verificação de e-mail
+- [ ] Notificações e lembretes de treino
+- [ ] Gráficos de evolução de carga e medidas
+- [ ] Upload de fotos de progresso
+- [ ] Deploy em nuvem com CI/CD
 
 ---
 
 ## 👥 Autores
 
-Projeto desenvolvido como trabalho acadêmico.
+| Nome | GitHub |
+|---|---|
+| _Seu nome_ | [@seu-usuario](https://github.com/seu-usuario) |
 
-> Sinta-se à vontade para adicionar aqui os nomes da equipe, a disciplina e a instituição.
+> Trabalho desenvolvido para a disciplina de **Engenharia de Software**.
+
+---
+
+<div align="center">
+
+Feito com 💚 e muito `café`
+
+</div>
